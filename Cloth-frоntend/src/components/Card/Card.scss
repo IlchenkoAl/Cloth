@@ -1,0 +1,238 @@
+.card {
+    $self: &;
+    padding: 30px;
+    border: 1px solid #d9d9d9;
+    border-radius: 40px;
+    transition: all .2s;
+
+    &-list {
+        display: flex;
+        flex-direction: column;
+
+        &:hover {
+            box-shadow: 0px 14px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        #{$self}__img {
+            position: relative;
+            width: 100%;
+            height: 112px;
+            object-fit: cover;
+            position: relative;
+            margin-bottom: 14px;
+            overflow: hidden;
+            border-radius: 7px;
+
+            img {
+                position: absolute;
+                width: 100%;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                user-select: none;
+                z-index: 1;
+            }
+
+            &--likeBtn {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 32px;
+                height: 32px;
+                border-radius: 7px;
+                border: 1px solid #d9d9d9;
+                outline: none;
+                background: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all .2s;
+                z-index: 2;
+
+                &:hover {
+                    border-color: #ff9a9a;
+
+                    svg {
+                        color: #ff9a9a;
+                    }
+                }
+
+                &-liked {
+                    background: #fddddd;
+                    border: 1px solid #fddddd;
+
+                    &:hover {
+                        border-color: #fddddd;
+    
+                        svg {
+                            color: #ff9a9a;
+                        }
+                    }
+                }
+
+                svg {
+                    transition: all .2s;
+                    color: #d9d9d9;
+                    width: 14px;
+                    height: 14px;
+                }
+            }
+
+            img {
+                width: 100%;
+            }
+        }
+
+        #{$self}__title {
+            flex: 1;
+            a {
+                color: #000;
+                text-decoration: none;
+                font-weight: 400;
+                font-size: 14px;
+                line-height: 17px;
+                margin-bottom: 14px;
+                display: -webkit-box;
+                overflow: hidden;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 2;
+                cursor: pointer;
+    
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        #{$self}__bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            &--price {
+                b {
+                    font-weight: 500;
+                    font-size: 11px;
+                    line-height: 13px;
+                    text-transform: uppercase;
+                    color: #BDBDBD;
+                }
+
+                p {
+                    font-weight: 700;
+                    font-size: 14px;
+                    line-height: 17px;
+                }
+            }
+
+            &--addBtn {
+                width: 32px;
+                height: 32px;
+                border-radius: 7px;
+                border: 1px solid #d9d9d9;
+                outline: none;
+                background: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all .2s;
+
+                &:hover {
+                    border-color: #9DD558;
+
+                    svg {
+                        color: #9DD558;
+                    }
+                }
+
+                &-added {
+                    border: none;
+                    background: linear-gradient(180deg, #89F09C 0%, #3CC755 100%)
+                }
+
+                svg {
+                    transition: all .2s;
+                    color: #d9d9d9;
+                    width: 27px;
+                    height: 27px;
+                }
+            }
+        }
+    }
+
+    &-cart {
+        display: grid;
+        grid-template-columns: 70px 1fr auto;
+        column-gap: 15px;
+        align-items: center;
+
+        #{$self}__img {
+            width: 70px;
+            height: 70px;
+            position: relative;
+
+            img {
+                user-select: none;
+                width: 100%;
+            }
+        }
+
+        #{$self}__title {
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 17px;
+
+            a {
+                color: #000;
+                text-decoration: none;
+                margin-bottom: 8px;
+                display: -webkit-box;
+                overflow: hidden;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 2;
+                cursor: pointer;
+    
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        #{$self}__bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            &--remove {
+                width: 32px;
+                height: 32px;
+                border-radius: 7px;
+                border: 1px solid #d9d9d9;
+                outline: none;
+                background: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all .2s;
+
+                &:hover {
+                    border-color: rgb(240, 120, 120);
+
+                    svg {
+                        color: rgb(240, 120, 120);
+                    }
+                }
+
+                svg {
+                    transition: all .2s;
+                    color: #d9d9d9;
+                    width: 27px;
+                    height: 27px;
+                }
+            }
+        }
+    }
+}

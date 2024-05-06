@@ -1,0 +1,45 @@
+.addsneakers {
+    padding: 20px 60px;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 40px;
+
+        h1 {
+            font-weight: 700;
+            font-size: 20px;
+            line-height: 39px;
+        }
+
+        &--back {
+            width: 32px;
+            height: 32px;
+            border-radius: 7px;
+            border: 1px solid #d9d9d9;
+            outline: none;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-right: 20px;
+
+            svg {
+                color: #d9d9d9;
+            }
+        }
+    }
+
+    &__form {
+        &-uploader {
+            width: 200px;
+            height: 200px;
+        }
+    }
+}
+
+.ant-upload.ant-upload-select {
+    width: 200px !important;
+    height: 200px !important;
+}

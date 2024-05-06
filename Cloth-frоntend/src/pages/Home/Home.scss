@@ -1,0 +1,23 @@
+.home {
+    padding: 20px 60px;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        h1 {
+            font-weight: 700;
+            font-size: 20px;
+            line-height: 39px;
+        }
+    }
+
+    &__priceList {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        column-gap: 25px;
+        row-gap: 20px;
+    }
+}

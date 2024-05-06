@@ -1,0 +1,93 @@
+.button {
+    position: relative;
+    border: none;
+    outline: none;
+    width: 100%;
+    background: #9DD558;
+    border-radius: 18px;
+    padding: 18px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 19px;
+    transition: background .2s;
+    cursor: pointer;
+
+    &:disabled {
+        background: #c0ee87;
+        cursor: default;
+
+        &:hover {
+            background: #c0ee87;
+        }
+    }
+
+    &-typing {
+        span {
+            height: 8px;
+            width: 8px;
+            margin: 0px 4px;
+            background-color: #fff;
+            display: inline-block;
+            border-radius: 50%;
+            opacity: 0.4;
+
+            @for $i from 1 through 3 {
+                &:nth-of-type(#{$i}) {
+                    animation: 1s blink infinite ($i * .3333s);
+                }
+            }
+        }
+
+        @keyframes blink {
+            20% {
+                transform: scale(.4);
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+    }
+
+    svg {
+        position: absolute;
+        transform: translate(0, -50%);
+        top: 50%;
+        height: 30px;
+        width: 30px;
+        transition: all .2s;
+    }
+
+    &-next {
+        svg {
+            right: 33px;
+        }
+
+        &:hover {
+            svg {
+                right: 27px;
+            }
+        }
+    }
+
+    &-back {
+        svg {
+            left: 33px;
+        }
+
+        &:hover {
+            svg {
+                left: 27px;
+            }
+        }
+    }
+
+    &:hover {
+        background: #8ec051;
+    }
+
+    &:active {
+        background: #84b14c;
+    }
+}
