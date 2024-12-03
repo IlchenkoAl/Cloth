@@ -88,7 +88,7 @@ const Login = () => {
                     <Button action={formik.handleSubmit} isSubmitting={formik.isSubmitting} content='Войти' padding={10} borderRadius={10}></Button>
                 </Form.Item>
             </Form>
-            <Link to='/auth/register'>Зарегестрироваться</Link>
+            <Link to='/auth/register'>Зарегистрироваться</Link>
         </div>
     )
 }

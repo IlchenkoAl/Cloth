@@ -38,7 +38,7 @@ export const register = async (req, res) => {
             })
         ) : (
             res.status(403).json({
-                message: 'Не удалось зарегестрироваться'
+                message: 'Не удалось зарегистрироваться'
             })
         )
         console.log(`${chalk.green('POST')} ${chalk.underline.italic.gray('/auth/register')} success: ${chalk.red('false')}`)
@@ -107,7 +107,7 @@ export const checkLogin = async (req, res) => {
         }
 
         res.json({
-            sucsess: true
+            success: true
         })
     } catch (error) {
         

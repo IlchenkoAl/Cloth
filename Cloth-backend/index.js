@@ -8,7 +8,7 @@ import { ActionsOnCardContoller, AuthController, CardController } from './contro
 import { checkAuth } from './utils/index.js'
 
 mongoose
-    .connect('mongodb+srv://admin:StartOff0492@cluster0.y1zox4x.mongodb.net/Sneakers?retryWrites=true&w=majority')
+    .connect('mongodb+srv://mamzigran:9fAOhC9aT2zMkQaw@cluster0.xnmipzn.mongodb.net/magazin?retryWrites=true&w=majority&appName=Cluster0')
     .then(() => console.log('Подключение к БД:', chalk.green('ОК')))
     .catch(error => console.log('Подключения к БД:', chalk.red('ERR::'), error))
 

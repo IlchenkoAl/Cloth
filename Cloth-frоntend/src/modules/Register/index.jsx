@@ -1,153 +1,165 @@
-import React from 'react'
-import { Link, Navigate } from 'react-router-dom'
-import { LockOutlined, UserOutlined } from '@ant-design/icons'
-import { Form, Input, message } from 'antd'
-import { useDispatch } from 'react-redux'
-import { useFormik } from 'formik'
+import React, { useState } from 'react';
+import { Link, Navigate } from 'react-router-dom';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Form, Input, message } from 'antd';
+import { useDispatch } from 'react-redux';
 
-import axios from '../../axios'
-import { validateForm } from '../../utils'
-import { fetchRegister } from '../../redux/slices/Auth'
-import { Button } from '../../components'
-import './Register.scss'
+import axios from '../../axios';
+import { fetchRegister } from '../../redux/slices/Auth';
+import { Button } from '../../components';
+import './Register.scss';
 
 const Register = () => {
-    const dispath = useDispatch()
-    const [status, setStatus] = React.useState(false)
+    const dispatch = useDispatch();
+    const [status, setStatus] = useState(false);
 
-    const handleChangeLogin = async loginValue => {
-        await axios.post('/auth/checkLogin', { login: loginValue })
-            .then(() => formik.handleChange(loginValue))
-            .catch(err => console.log(err))
-    }
+    // Состояние для хранения данных формы
+    const [formData, setFormData] = useState({
+        name: '',
+        surname: '',
+        login: '',
+        password: '',
+        confirmation: '',
+    });
 
-    const formik = useFormik({
-        initialValues: {
-            name: '',
-            surname: '',
-            login: '',
-            password: '',
-            confirmation: '',
-        },
-        validate: async values => {
-            let errors = {}
-            if (values.login === '') {
-                errors.login = 'Пожалуйста заполните это поле'
-            }
-            await axios.post('/auth/checkLogin', { login: values.login }).catch(err => errors.login = err.response.data.message)
-            validateForm({ values, errors })
+    const [errors, setErrors] = useState({});
 
-            return errors
-        },
-        onSubmit: async (values, { setErrors }) => {
-            const { confirmation, ...data } = values
-            await (dispath(fetchRegister(data)).unwrap().then(() => {
-                message.success('Регистрация прошла успешно!', 1.3)
-                setStatus(true)
-            }).catch(error => {
-                setErrors({ login: error.message })
-            }))
+    const handleInputChange = (e) => {
+        const { id, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [id]: value,
+        }));
+    };
+
+    const validate = () => {
+        const newErrors = {};
+        if (!formData.name) newErrors.name = 'Введите имя';
+        if (!formData.surname) newErrors.surname = 'Введите фамилию';
+        if (!formData.login) newErrors.login = 'Введите логин';
+        if (!formData.password) newErrors.password = 'Введите пароль';
+        if (formData.password !== formData.confirmation) {
+            newErrors.confirmation = 'Пароли не совпадают';
+        }
+        return newErrors;
+    };
+
+    const handleSubmit = async () => {
+        const validationErrors = validate();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
         }
 
-    })
+        const { confirmation, ...data } = formData;
+
+        try {
+            const response = await axios.post('/auth/checkLogin', { login: formData.login });
+            if (response.data.error) {
+                setErrors({ login: response.data.error });
+                return;
+            }
+
+            await dispatch(fetchRegister(data)).unwrap();
+            message.success('Регистрация прошла успешно!', 1.3);
+            setStatus(true);
+        } catch (error) {
+            setErrors({ login: error.response?.data?.message || 'Ошибка при регистрации' });
+        }
+    };
 
     return (
-        <div className='register'>
-            {status && <Navigate to='/auth/login' />}
+        <div className="register">
+            {status && <Navigate to="/auth/login" />}
             <h1>Регистрация</h1>
             <Form
                 name="normal_login"
                 className="login-form"
                 initialValues={{ remember: true }}
+                onFinish={handleSubmit}
             >
-                <Form name="horizontal_login" layout="inline" style={{ justifyContent: 'space-between', marginBottom: 20 }}>
+                <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
                     <Form.Item
-                        hasFeedback
-                        style={{ width: '48%', margin: 0 }}
                         name="Name"
-                        validateStatus={!formik.touched.name ? '' : formik.errors.name && 'error'}
-                        rules={[{ required: true, message: '' }]}
+                        validateStatus={errors.name ? 'error' : ''}
+                        help={errors.name}
+                        style={{ flex: 1 }}
                     >
                         <Input
-                            id='name'
-                            prefix={<UserOutlined className="site-form-item-icon" />}
+                            id="name"
+                            prefix={<UserOutlined />}
                             placeholder="Имя"
-                            value={formik.values.name}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
+                            value={formData.name}
+                            onChange={handleInputChange}
                         />
                     </Form.Item>
                     <Form.Item
-                        hasFeedback
-                        style={{ width: '48%', margin: 0 }}
-                        validateStatus={!formik.touched.surname ? '' : formik.errors.surname && 'error'}
                         name="Surname"
-                        rules={[{ required: true, message: '' }]}
+                        validateStatus={errors.surname ? 'error' : ''}
+                        help={errors.surname}
+                        style={{ flex: 1 }}
                     >
                         <Input
-                            id='surname'
-                            prefix={<UserOutlined className="site-form-item-icon" />}
+                            id="surname"
+                            prefix={<UserOutlined />}
                             placeholder="Фамилия"
-                            value={formik.values.suranem}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
+                            value={formData.surname}
+                            onChange={handleInputChange}
                         />
                     </Form.Item>
-                </Form>
+                </div>
                 <Form.Item
                     name="Login"
-                    hasFeedback
-                    help={formik.touched.login && formik.errors.login && formik.errors.login}
-                    validateStatus={!formik.touched.login ? '' : formik.errors.login ? 'error' : 'success'}
-                    rules={[{ required: true }]}
+                    validateStatus={errors.login ? 'error' : ''}
+                    help={errors.login}
                 >
                     <Input
-                        id='login'
-                        prefix={<UserOutlined className="site-form-item-icon" />}
+                        id="login"
+                        prefix={<UserOutlined />}
                         placeholder="Придумайте логин"
-                        value={formik.values.login}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
+                        value={formData.login}
+                        onChange={handleInputChange}
                     />
                 </Form.Item>
                 <Form.Item
                     name="Password"
-                    help={formik.touched.password && formik.errors.password && formik.errors.password}
-                    validateStatus={!formik.touched.password ? '' : formik.errors.password ? 'error' : 'success'}
-                    rules={[{ required: true }]}
+                    validateStatus={errors.password ? 'error' : ''}
+                    help={errors.password}
                 >
                     <Input.Password
-                        id='password'
-                        prefix={<LockOutlined className="site-form-item-icon" />}
-                        type="password"
+                        id="password"
+                        prefix={<LockOutlined />}
                         placeholder="Пароль"
-                        value={formik.values.password}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
+                        value={formData.password}
+                        onChange={handleInputChange}
                     />
                 </Form.Item>
                 <Form.Item
                     name="Confirmation"
-                    help={formik.touched.confirmation && formik.errors.confirmation && formik.errors.confirmation}
-                    validateStatus={!formik.touched.confirmation ? '' : formik.errors.confirmation ? 'error' : 'success'}
-                    rules={[{ required: true }]}
+                    validateStatus={errors.confirmation ? 'error' : ''}
+                    help={errors.confirmation}
                 >
                     <Input.Password
-                        id='confirmation'
-                        prefix={<LockOutlined className="site-form-item-icon" />}
-                        placeholder="Поддтвердите пароль"
-                        value={formik.values.confirmation}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
+                        id="confirmation"
+                        prefix={<LockOutlined />}
+                        placeholder="Подтвердите пароль"
+                        value={formData.confirmation}
+                        onChange={handleInputChange}
                     />
                 </Form.Item>
                 <Form.Item>
-                    <Button action={formik.handleSubmit} isSubmitting={formik.isSubmitting} content='Зарегестрироваться' padding={10} borderRadius={10} />
+                    <Button
+                        action={handleSubmit}
+                        isSubmitting={false}
+                        content="Зарегистрироваться"
+                        padding={10}
+                        borderRadius={10}
+                    />
                 </Form.Item>
             </Form>
-            <Link to='/auth/login'>Авторизоваться</Link>
+            <Link to="/auth/login">Авторизоваться</Link>
         </div>
-    )
-}
+    );
+};
 
-export default Register
+export default Register;
