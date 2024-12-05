@@ -3,6 +3,7 @@ import Card from './models/Card.js';
 import User from './models/User.js';
 import bcrypt from 'bcrypt';
 
+// Фикстурные данные
 const fixtureCards = [
     {
         title: 'Nike Air Max 90',
@@ -21,6 +22,36 @@ const fixtureCards = [
         price: 13000,
         description: 'Кроссовки Puma RS-X – это свежий взгляд на ретро стиль.',
         imgUrl: '/uploads/puma-rsx.jpg',
+    },
+    {
+        title: 'Reebok Classic Leather',
+        price: 10000,
+        description: 'Reebok Classic Leather – это сочетание элегантного стиля и непревзойденного комфорта.',
+        imgUrl: '/uploads/reebok-classic-leather.jpg',
+    },
+    {
+        title: 'New Balance 574',
+        price: 11000,
+        description: 'New Balance 574 – это универсальные кроссовки для повседневного использования.',
+        imgUrl: '/uploads/new-balance-574.jpg',
+    },
+    {
+        title: 'Asics Gel-Kayano',
+        price: 14000,
+        description: 'Asics Gel-Kayano – это высококлассные беговые кроссовки с передовыми технологиями.',
+        imgUrl: '/uploads/asics-gel-kayano.jpg',
+    },
+    {
+        title: 'Jordan 1 High OG',
+        price: 17000,
+        description: 'Jordan 1 High OG – культовая модель для любителей баскетбола и уличного стиля.',
+        imgUrl: '/uploads/jordan-1-high-og.jpg',
+    },
+    {
+        title: 'Vans Old Skool',
+        price: 9000,
+        description: 'Vans Old Skool – классика скейтборда с иконой полоски Vans.',
+        imgUrl: '/uploads/vans-old-skool.jpg',
     },
 ];
 
@@ -47,23 +78,23 @@ const fixtureUsers = [
 
 async function resetDatabase() {
     try {
-        // Подключение к базе данных
-        await mongoose.connect('mongodb://localhost:27017/your_database_name', {
+        // Подключение к MongoDB
+        await mongoose.connect('mongodb://127.0.0.1:27017/magazin', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
-
-        console.log('База данных подключена.');
+        console.log('Подключение к базе данных успешно установлено.');
 
         // Очистка коллекций
         await Card.deleteMany({});
+        console.log('Коллекция Cards очищена.');
+
         await User.deleteMany({});
-        console.log('Все данные удалены.');
+        console.log('Коллекция Users очищена.');
 
-        // Добавление фикстурных данных
+        // Добавление товаров
         await Card.insertMany(fixtureCards);
-        console.log('Фикстурные данные для Cards добавлены.');
-
+        // Добавление пользователей
         const hashedUsers = await Promise.all(
             fixtureUsers.map(async (user) => ({
                 ...user,
@@ -73,14 +104,15 @@ async function resetDatabase() {
         );
 
         await User.insertMany(hashedUsers);
-        console.log('Фикстурные данные для Users добавлены.');
 
         console.log('База данных успешно сброшена и заполнена фикстурными данными.');
     } catch (error) {
-        console.error('Ошибка при сбросе базы данных:', error);
+        console.error('Ошибка сброса базы данных:', error);
     } finally {
-        await mongoose.connection.close();
+        await mongoose.disconnect();
+        console.log('Подключение к базе данных закрыто.');
     }
 }
 
-resetDatabase().then();
+// Запуск сброса базы данных
+resetDatabase().then(() => console.log('Процесс завершён.'));

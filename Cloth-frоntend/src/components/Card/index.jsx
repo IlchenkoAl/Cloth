@@ -17,7 +17,6 @@ import './Card.scss'
 
 const Card = ({ _id, title, imgUrl, price, type, isLiked }) => {
     const dispatch = useDispatch()
-
     const { userData } = useSelector(state => state.auth)
     const isAuth = useSelector(selectIsAuth)
     const [liked, setLiked] = React.useState(false)
@@ -36,6 +35,7 @@ const Card = ({ _id, title, imgUrl, price, type, isLiked }) => {
     }
 
     const onAdded = async (card, reqestType) => {
+        // eslint-disable-next-line default-case
         switch (reqestType) {
             case 'ADD_CART':
                 message.success(`${card.title} добавленны в корзину`, 1.3)
@@ -54,6 +54,7 @@ const Card = ({ _id, title, imgUrl, price, type, isLiked }) => {
     }
 
     const onRemove = async (id, title, reqestType) => {
+        // eslint-disable-next-line default-case
         switch (reqestType) {
             case 'REMOVE_CART':
                 message.success(`${title} были убраны из корзины`, 1.3)
@@ -112,7 +113,7 @@ const Card = ({ _id, title, imgUrl, price, type, isLiked }) => {
                         {(addedBookmarks || liked || isLiked) ? <HeartFill color='#FF8585' /> : <Heart />}
                     </div>
                 }
-                <img src={'http://snapi.candy.anosov.ru' + imgUrl} alt="Sneakers" />
+                <img src={'http://localhost:5556' + imgUrl} alt="Sneakers" />
             </div>
             <div className="card__title">
                 <Link to={"/" + _id}>{title}</Link>
