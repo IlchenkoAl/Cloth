@@ -26,6 +26,7 @@ export const add = async (req, res) => {
 }
 
 export const all = async (req, res) => {
+    c
     try {
         const card = await CardModel.find().exec()
         res.json(card)

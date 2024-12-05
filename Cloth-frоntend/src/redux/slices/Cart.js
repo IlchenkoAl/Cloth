@@ -33,8 +33,8 @@ const cartSlice = createSlice({
             state.totalPrice = calcTotalPrice(state.cartItems)
         }
     },
-    extraReducers: (bilding) => {
-        bilding
+    extraReducers: (builder) => {
+        builder
             .addCase(fetchAllCart.fulfilled, (state, action) => {
                 state.cartItems = action.payload.length === 0 ? null : action.payload
                 state.status = 'loaded'

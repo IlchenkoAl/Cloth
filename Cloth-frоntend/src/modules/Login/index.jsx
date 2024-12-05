@@ -30,7 +30,6 @@ const Login = () => {
             return errors
         },
         onSubmit: async values => {
-            console.log(values)
             await (dispatch(fetchLogin(values)).unwrap().then(data => {
                 message.success(`Добро пожаловать, ${data.name}!`, 1.3)
 

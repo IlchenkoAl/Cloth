@@ -1,21 +1,17 @@
-import jsonWebToken from "jsonwebtoken"
+import jsonWebToken from 'jsonwebtoken';
 
-export default (req, res, next) => {
-    const token = (req.headers.authorization || '').replace(/Bearer\s?/, '')
+export const checkAuth = (req, res, next) => {
+    const token = (req.headers.authorization || '').replace(/Bearer\s?/, '');
 
     if (token) {
         try {
-            const decoded = jsonWebToken.verify(token, 'secret123')
-            req.userId = decoded._id
-            next()
+            const decoded = jsonWebToken.verify(token, process.env.JWT_SECRET || 'default_secret');
+            req.userId = decoded._id;
+            next();
         } catch (error) {
-            return res.status(403).json({
-                message: 'Нет доступа'
-            })
+            return res.status(403).json({ message: 'Нет доступа' });
         }
     } else {
-        return res.status(403).json({
-            message: 'Нет доступа'
-        })
+        return res.status(403).json({ message: 'Нет доступа' });
     }
-}
+};

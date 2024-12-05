@@ -31,8 +31,8 @@ const actionOnCardSlice = createSlice({
     name: 'Card',
     initialState,
     reducers: {},
-    extraReducers: (bilding) => {
-        bilding
+    extraReducers: (builder) => {
+        builder
             .addCase(fetchAddCard.fulfilled, (state) => {
                 state.addedError = null
             })

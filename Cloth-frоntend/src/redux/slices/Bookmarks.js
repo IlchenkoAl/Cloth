@@ -29,8 +29,8 @@ const bookmarksSlice = createSlice({
             state.bookmarksItems = newBookmarksItems.length === 0 ? null : newBookmarksItems
         }
     },
-    extraReducers: (bilding) => {
-        bilding
+    extraReducers: (builder) => {
+        builder
             .addCase(fetchAllBookmarks.fulfilled, (state, action) => {
                 state.bookmarksItems = action.payload.length === 0 ? null : action.payload
                 state.status = 'loaded'

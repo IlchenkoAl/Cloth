@@ -38,8 +38,8 @@ const authSlice = createSlice({
             state.data = null
         }
     },
-    extraReducers: (bilding) => {
-        bilding
+    extraReducers: (builder) => {
+        builder
             .addCase(fetchLogin.pending, (state) => {
                 state.userData = null
                 state.status = 'loading'

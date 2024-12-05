@@ -1,115 +1,102 @@
-import jsonWebToken from "jsonwebtoken"
-import bcrypt from 'bcrypt'
-import chalk from "chalk"
+import bcrypt from 'bcrypt';
+import jsonWebToken from 'jsonwebtoken';
+import chalk from 'chalk';
+import User from '../models/User.js';
 
-import { UserModel } from '../models/index.js'
+// Секретный ключ для JWT
+const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 
+// Регистрация
 export const register = async (req, res) => {
     try {
-        const password = req.body.password
-        const salt = await bcrypt.genSalt(10)
-        const hash = await bcrypt.hash(password, salt)
+        const { name, surname, login, password } = req.body;
 
-        const doc = new UserModel({
-            name: req.body.name,
-            surname: req.body.surname,
-            login: req.body.login,
-            passwordHash: hash,
-        })
+        // Проверяем, занят ли логин
+        const existingUser = await User.findOne({ login });
+        if (existingUser) {
+            return res.status(403).json({ message: 'Логин занят' });
+        }
 
-        await doc.validate()
+        // Хэшируем пароль
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(password, salt);
 
-        const user = await doc.save()
-        const token = jsonWebToken.sign({
-            _id: user._id
-        }, 'secret123', { expiresIn: '30d' })
+        // Создаём пользователя
+        const user = new User({ name, surname, login, passwordHash });
+        await user.save();
 
-        const { passwordHash, ...userData } = user._doc
+        // Генерируем токен
+        const token = jsonWebToken.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '30d' });
 
-        res.json({
-            ...userData,
-            token
-        })
-        console.log(`${chalk.green('POST')} ${chalk.underline.italic.gray('/auth/register')} success: ${chalk.green('true')}`)
+        // Убираем пароль из ответа
+        const { passwordHash: _, ...userData } = user._doc;
+        res.json({ ...userData, token });
+
+        console.log(`${chalk.green('POST')} /auth/register success`);
     } catch (error) {
-        error.code ? error.code === 11000 && (
-            res.status(403).json({
-                message: 'Логин занят'
-            })
-        ) : (
-            res.status(403).json({
-                message: 'Не удалось зарегистрироваться'
-            })
-        )
-        console.log(`${chalk.green('POST')} ${chalk.underline.italic.gray('/auth/register')} success: ${chalk.red('false')}`)
+        console.error(error);
+        res.status(500).json({ message: 'Не удалось зарегистрироваться' });
     }
-}
+};
 
+// Логин
 export const login = async (req, res) => {
     try {
-        const user = await UserModel.findOne({ login: req.body.login })
+        const { login, password } = req.body;
+
+        // Проверяем существование пользователя
+        const user = await User.findOne({ login });
         if (!user) {
-            console.log(`${chalk.green('POST')} ${chalk.underline.italic.gray('/auth/login')} success: ${chalk.red('false')}`)
-            return res.status(403).json({
-                message: 'Неверный логин или пароль'
-            })
+            return res.status(403).json({ message: 'Неверный логин или пароль' });
         }
 
-        const isValidPassword = await bcrypt.compare(req.body.password, user._doc.passwordHash)
+        // Проверяем пароль
+        const isValidPassword = await bcrypt.compare(password, user.passwordHash);
         if (!isValidPassword) {
-            console.log(`${chalk.green('POST')} ${chalk.underline.italic.gray('/auth/login')} success: ${chalk.red('false')}`)
-            return res.status(403).json({
-                message: 'Неверный логин или пароль'
-            })
+            return res.status(403).json({ message: 'Неверный логин или пароль' });
         }
 
-        const token = jsonWebToken.sign({
-            _id: user._id
-        }, 'secret123', { expiresIn: '30d' })
-        const { passwordHash, ...userData } = user._doc
+        // Генерируем токен
+        const token = jsonWebToken.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '30d' });
 
-        res.json({
-            ...userData,
-            token
-        })
-        console.log(`${chalk.green('POST')} ${chalk.underline.italic.gray('/auth/login')} success: ${chalk.green('true')}`)
+        const { passwordHash: _, ...userData } = user._doc;
+        res.json({ ...userData, token });
+
+        console.log(`${chalk.green('POST')} /auth/login success`);
     } catch (error) {
-        res.status(403).json({
-            message: 'Не удалось авторизоваться'
-        })
-        console.log(`${chalk.green('POST')} ${chalk.underline.italic.gray('/auth/login')} success: ${chalk.red('false')}`)
+        console.error(error);
+        res.status(500).json({ message: 'Не удалось авторизоваться' });
     }
-}
+};
 
+// Получение текущего пользователя
 export const getMe = async (req, res) => {
-    const user = await UserModel.findById(req.userId)
-    if (!user) {
-        return res.status(404).json({
-            message: 'Пользователь не найден'
-        })
+    try {
+        const user = await User.findById(req.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Пользователь не найден' });
+        }
+
+        const { passwordHash: _, ...userData } = user._doc;
+        res.json({ ...userData });
+
+        console.log(`${chalk.green('GET')} /auth/me success`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Ошибка сервера' });
     }
+};
 
-    const { passwordHash, ...userData } = user._doc
-    res.json({
-        ...userData
-    })
-    console.log(`${chalk.magenta('GET')} ${chalk.underline.italic.gray('/auth/me')} success: ${chalk.green('true')}`)
-}
-
+// Проверка логина
 export const checkLogin = async (req, res) => {
     try {
-        const user = await UserModel.findOne({ login: req.body.login }).exec()
-
+        const user = await User.findOne({ login: req.body.login });
         if (user) {
-            return res.status(403).json({
-                message: 'Логин занят'
-            })
+            return res.status(403).json({ message: 'Логин занят' });
         }
-
-        res.json({
-            success: true
-        })
+        res.json({ success: true });
     } catch (error) {
-        
+        console.error(error);
+        res.status(500).json({ message: 'Ошибка проверки логина' });
     }
-}
+};
