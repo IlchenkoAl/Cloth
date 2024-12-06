@@ -1,12 +1,12 @@
 import React from 'react'
-import { Cart3, Heart, PersonCircle, PatchPlus } from 'react-bootstrap-icons'
+import { Cart3, Heart, PersonCircle, PatchPlus, BoxArrowRight } from 'react-bootstrap-icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { Badge } from 'antd'
 import { Link } from 'react-router-dom'
 
 import { calcTotalPrice } from '../../utils'
 import { setIsVisibCard } from '../../redux/slices/visib'
-import { selectIsAuth } from '../../redux/slices/Auth'
+import { selectIsAuth, logout } from '../../redux/slices/Auth'
 import { Logo } from '../../assets'
 import './Header.scss'
 
@@ -17,6 +17,11 @@ const Header = () => {
     const { bookmarksItems } = useSelector(state => state.bookmarks)
 
     const onVisibCart = () => dispatch(setIsVisibCard(true))
+
+    const handleLogout = () => {
+        console.log('exit')
+        dispatch(logout()) // Вызов действия для выхода из аккаунта
+    }
 
     React.useEffect(() => {
         calcTotalPrice(cartItems)
@@ -53,10 +58,13 @@ const Header = () => {
                                 <PersonCircle />
                             </Link>
                         </div>
+                        <button className="header__profile--logout" onClick={handleLogout}>
+                            <BoxArrowRight />
+                        </button>
                     </> :
                     <div className="header__profile--authBtn">
                         <Link to='/auth/login'>Войти</Link>
-                        <Link to='/auth/register'>Зарегестрироваться</Link>
+                        <Link to='/auth/register'>Зарегистрироваться</Link>
                     </div>
                 }
             </div>
